@@ -54,17 +54,20 @@ export class UploadFormComponent implements OnInit, OnDestroy {
   createShrinkForm(): void {
     const width = new FormControl(null, [
       Validator.required('Width'),
-      Validator.isNumericFloat()
+      Validator.isNumericFloat(),
+      Validator.minAndMaxNumbers(100, 10000)
     ]);
 
     const height = new FormControl(null, [
       Validator.required('Height'),
-      Validator.isNumericFloat()
+      Validator.isNumericFloat(),
+      Validator.minAndMaxNumbers(100, 10000)
     ]);
 
     const quality = new FormControl(50, [
       Validator.required('Quality'),
-      Validator.isNumericFloat()
+      Validator.isNumericFloat(),
+      Validator.minAndMaxNumbers(1, 100)
     ]);
 
     this.shrinkForm = new FormGroup({
@@ -117,12 +120,14 @@ export class UploadFormComponent implements OnInit, OnDestroy {
           this.uploadMessage = res.message;
           this.downloadLink = DOWNLOAD_SHRINK_FILE + '/' + res.data;
           this.resetImages();
+          this.resetProgress();
           this.shrinkForm.reset();
           this.getControl('quality').setValue(50);
         }
-      }, err => {
+      }, (err) => {
+        this.resetProgress();
         this.typeMessage = 'danger';
-        this.uploadMessage = err.errors;
+        this.uploadMessage = err.error.errors;
       });
     }
   }
@@ -155,8 +160,6 @@ export class UploadFormComponent implements OnInit, OnDestroy {
     }
 
     if (event.type === HttpEventType.Response) {
-      this.uploadingProgressing = false;
-      this.uploadProgress = 0;
       this.uploadComplete = true;
       return event.body;
     }
@@ -180,5 +183,10 @@ export class UploadFormComponent implements OnInit, OnDestroy {
     this.imagesUrls = null;
     this.imagesLabel = 'Choose Images';
     this.filePicture.nativeElement.value = '';
+  }
+
+  resetProgress(): void {
+    this.uploadingProgressing = false;
+    this.uploadProgress = 0;
   }
 }
