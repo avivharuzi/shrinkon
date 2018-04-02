@@ -7,6 +7,8 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 
+const shrinkRoute = require('./routes/shrink.route');
+
 const app = express();
 
 app.use(logger('dev'));
@@ -17,6 +19,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());
 app.use(fileUpload());
 
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/api/shrink', shrinkRoute);
 
 module.exports = app;

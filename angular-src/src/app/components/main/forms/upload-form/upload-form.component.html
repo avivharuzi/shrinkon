@@ -1,0 +1,47 @@
+<div id="uploadForm">
+  <div *ngIf="uploadingProgressing" class="main-progress">
+    <div class="progress">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" [style.width]="uploadProgress + '%'">{{ uploadProgress + '%' }}</div>
+    </div>
+  </div>
+
+  <app-message [type]="typeMessage" [message]="uploadMessage"></app-message>
+
+  <form *ngIf="!uploadComplete" [formGroup]="shrinkForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6">
+          <label>Width</label>
+          <input type="number" formControlName="width" class="form-control" placeholder="Width" autofocus>
+          <app-error-form [control]="getControl('width')"></app-error-form>
+        </div>
+        <div class="col-md-6">
+          <label>Height</label>
+          <input type="number" formControlName="height" class="form-control" placeholder="Height">
+          <app-error-form [control]="getControl('height')"></app-error-form>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Quality {{ getControl('quality').value + '%' }}</label>
+      <input type="range" formControlName="quality" class="slider" min="1" max="100">
+      <app-error-form [control]="getControl('quality')"></app-error-form>
+    </div>
+    <div class="form-group">
+      <input type="file" #filePicture name="file" (change)="changeImages($event)" multiple id="file" class="upload" />
+      <label for="file"><i class="fa fa-upload mr-2"></i>{{ imagesLabel }}</label>
+    </div>
+    <div class="preview-images mb-4">
+      <div *ngIf="imagesUrls">
+        <img *ngFor="let imgUrl of imagesUrls" [src]="imgUrl" width="100px" width="100px">
+      </div>
+    </div>
+    <button [disabled]="shrinkForm.invalid" class="btn btn-prime btn-send">Shrink<i class="fa fa-exclamation ml-2"></i>
+    </button>
+  </form>
+
+  <div *ngIf="uploadComplete" class="mt-5">
+    <button class="btn btn-prime btn-reupload mb-5" (click)="reupload()"><i class="fa fa-undo mr-2"></i>Shrink More<i class="fa fa-exclamation ml-2"></i></button>
+    <button class="btn btn-prime btn-download" (click)="download()"><i class="fa fa-download mr-2"></i>Download</button>
+  </div>
+</div>

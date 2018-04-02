@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+const archiver = require('archiver');
+
 class FileHandler {
     static checkFileType(file, type) {
         let filetypes;
@@ -124,11 +126,52 @@ class FileHandler {
         return new Buffer(bitmap).toString('base64');
     }
 
+    static convertBufferToImage(buffer) {
+        return new Promise((resolve, reject) => {
+            fs.writeFile('public/images/test.jpg', buffer, 'binary', (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
     static convertFileToName(file) {
         let lastIndex = file.lastIndexOf('.');
         let name = file.substr(0, lastIndex);
 
         return name;
+    }
+
+    static zipBuffers(buffers) {
+        return new Promise((resolve, reject) => {
+            let filename = Date.now() + '.zip';
+            let path = 'public/zip/' + filename;
+            let output = fs.createWriteStream(path);
+            let archive = archiver('zip', {
+                zlib: {
+                    level: 9
+                }
+            });
+    
+            output.on('close', function() {
+                resolve(filename);
+            });
+    
+            archive.pipe(output);
+    
+            for (let buffer of buffers) {
+                archive.append(buffer.data, { name: buffer.name });
+            }
+    
+            archive.on('error', (err) => {
+                reject(err);
+            });
+    
+            archive.finalize();
+        });
     }
 }
 
