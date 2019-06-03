@@ -1,2 +1,3 @@
-# shrinkon
-resize your images without care of anything
+# Shrinkon
+
+Resize your images without care of anything.
